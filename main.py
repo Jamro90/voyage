@@ -1,0 +1,10 @@
+from gui import start_window, main_window
+
+ver = "0.0.1"
+last_update = "23.02.2022"
+
+if __name__ == "__main__":
+    print("\nHellow, World!\n")
+    start_window(ver, last_update)
+
+
