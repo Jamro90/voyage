@@ -1,7 +1,7 @@
 CC = python3
 INS = pyinstaller
 MAIN = main
-LIBS = gui.py commands.py update.py 
+LIBS = gui.py commands.py update.py doc.py 
 MSG = echo "\n ----- COMPILATION COMPLETE! ----- \n"
 
 default:
