@@ -1,14 +1,14 @@
 CC = python3
 INS = pyinstaller
 MAIN = main
-LIBS = gui.py commands.py update.py doc.py 
+LIBS = gui.py commands.py update.py document_maker.py 
 MSG = echo "\n ----- COMPILATION COMPLETE! ----- \n"
 
 default:
 	${CC} ${MAIN}.py 
 
 install:
-	${INS} --onefile --windowed ${MAIN}.py ${LIBS}
+	${INS} --onefile --windowed --icon="ico.ico" ${MAIN}.py ${LIBS}
 	${MSG}
 
 remove:
@@ -18,6 +18,7 @@ remove:
 done:
 	make install
 	make remove
+	zip -r voyage.zip voyage
 	${MSG}
 
 req:

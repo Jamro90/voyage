@@ -1,0 +1,4 @@
+openpyxl
+tk
+python-docx
+requests

@@ -3,7 +3,8 @@ from tkinter.ttk import *
 import datetime
 from commands import *
 from update import *
-from doc import *
+from document_maker import sort_list, doc_make
+
 font_name = "arial"
 font_size = 10
 
@@ -95,7 +96,12 @@ def main_window(ver, pchor_list):
         date = date + datetime.timedelta(days = 1)
         datum.append(date.strftime("%d" + "." + "%m" + "." + "%Y"))
     
-    # new working plane
+    def sorting():
+        # combine & sort array data
+        sorted_data = sort_list(pchor_list, from_date, to_date, check_var)
+        # print document form sorted data
+        doc_make(sorted_data, window)
+
     frame = Frame(window)
     
     # scrollbar settings
@@ -109,45 +115,71 @@ def main_window(ver, pchor_list):
     # new frame for widgets
     set_frame = Frame(canvas)
     canvas.create_window((0,0), window = set_frame, anchor = "nw")
-
-    k = 0
-    for line in pchor_list:
-        sline = line.split(",")
-        #print(sline)
-        j = 0
-        for i in sline:
-            Label(set_frame, text = i, font = (font_name, font_size)).grid(column = j, row = k, padx = 5, pady = 5)
-            j = j + 1
-        
-        if k == 0:
-            Label(set_frame, text = "od", font = (font_name, font_size)).grid(column = j+1, row = k, padx = 5, pady = 5)
-            Label(set_frame, text = "do", font = (font_name, font_size)).grid(column = j+2, row = k, padx = 5, pady = 5)
-            Label(set_frame, text = "wpis", font = (font_name, font_size)).grid(column = j+3, row = k, padx = 5, pady = 5)
-        else: 
-            # dates combo boxes
-            from_var = StringVar()
-            from_combo = Combobox(set_frame, textvariable = from_var, width = 10)
-            from_combo["value"] = (datum)
-            from_combo["state"] = "readonly"
-            from_combo.grid(column = j+1, row = k, padx = 15, pady = 5)
-            from_combo.current(0)
-
-            to_var = StringVar()
-            to_combo = Combobox(set_frame, textvariable = to_var, width = 10) 
-            to_combo["values"] = (datum)
-            to_combo["state"] = "readonly"
-            to_combo.grid(column = j+2, row = k, padx = 15, pady = 5)
-            to_combo.current(0)
-
-            # check boxes
-            check = IntVar()
-            check_box = Checkbutton(set_frame, textvariable = check, onvalue = 1).grid(column = j+3, row = k, padx = 15, pady = 5)
     
-        k = k + 1
-    sort_list(pchor_list)
+    # making array of arrays
+    pchor_list_list = []
+    for _pchor in pchor_list:
+        pchor = _pchor.split(",")
+        pchor_list_list.append(pchor)
+
+    # reserving memory for xomboboxes & checkbuttons
+    from_date = []
+    to_date = []
+    check_var = []
+    for i in pchor_list_list:
+        from_date.append(StringVar(window))
+        to_date.append(StringVar(window))
+        check_var.append(IntVar(window))
+    from_date.pop(0)
+    to_date.pop(0)
+    check_var.pop(0)
+    
+    # showing widgets
+    # showing labels & records
+    row = 0
+    for i in pchor_list_list:
+        for col in range(0,3):
+            if row == 0:
+                Label(set_frame, text = i[col], font = (font_name, font_size)).grid(column = col, row = row, padx = 20, pady = 5)
+
+            else:
+                Label(set_frame, text = i[col], font = (font_name, font_size)).grid(column = col, row = row, padx = 20, pady = 5)
+        row += 1
+    
+    # showing comboboxes
+    row = 0
+    labs = ["od", "do", "wpis"]
+    for i in pchor_list_list:
+        for col in range(3, 6):
+            if row == 0:
+                Label(set_frame, text = labs[col-3], font = (font_name, font_size)).grid(column = col, row = row, padx = 20, pady = 5)
+
+            else:
+                if from_date and col == 3:
+                    from_combo = Combobox(set_frame, textvariable = from_date[row-1], width = 10)
+                    from_combo["value"] = (datum)
+                    from_combo.current(0)
+                    from_combo["state"] = "readonly"
+                    from_combo.grid(column = col, row = row, padx = 20, pady = 5)
+                    
+                elif to_date and col == 4:
+                    to_combo = Combobox(set_frame, textvariable = to_date[row-1], width = 10)
+                    to_combo["value"] = (datum)
+                    to_combo.current(0)
+                    to_combo["state"] = "readonly"
+                    to_combo.grid(column = col, row = row, padx = 20, pady = 5)
+                
+                else:
+                    check = Checkbutton(set_frame, variable = check_var[row-1], onvalue = 1, offvalue = 0)
+                    check.grid(column = col, row = row, padx = 20, pady = 5)
+        row += 1
+
+    # buttons
+    # exec for btn
+    btn_exec = Button(set_frame, text = "VOYAGE", command = sorting).grid(column = 4, row = 500, padx = 15, pady = 5)
+    btn_exit = Button(set_frame, text = "Wyjdź (ESC)", command = window.destroy).grid(column = 3, row = 500, padx =  15, pady = 5)
     # display
     frame.pack(fill = BOTH, expand = 1)
     window.config(menu = menu_obj)
     window.mainloop()
-
 
